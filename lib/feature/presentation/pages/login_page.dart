@@ -49,9 +49,23 @@ class _LoginPageState extends State<LoginPage> {
                 prefixIcon: Icons.lock,
               ),
               const SizedBox(
-                height: 8,
+                height: 10,
               ),
-              _forgotPasswordWidget(),
+              Align(
+                alignment: Alignment.topRight,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, PageConst.forgotPasswordPage);
+                  },
+                  child: Text(
+                    "Forgot Password?",
+                    style: TextStyle(
+                        color: greenColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
               const SizedBox(
                 height: 10,
               ),
@@ -79,22 +93,18 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-Widget _forgotPasswordWidget() {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      const Text(""),
-      InkWell(
-        onTap: () {},
-        child:  Text(
-          "Forgot Password?",
-          style: TextStyle(
-              color: greenColor, fontSize: 16, fontWeight: FontWeight.w700),
-        ),
-      ),
-    ],
-  );
-}
+// Widget _forgotPasswordWidget() {
+//   return Row(
+//     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//     children: [
+//       const Text(""),
+//       InkWell(
+//         onTap: () {},
+//         child: 
+//       ),
+//     ],
+//   );
+//}
 
 // Widget _rowGoogleWidget() {
 //   return Row(

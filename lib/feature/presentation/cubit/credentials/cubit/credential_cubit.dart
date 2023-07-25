@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:chat_clean_arch/feature/domain/entities/user_entities.dart';
 import 'package:chat_clean_arch/feature/domain/usecases/forgot_password_usecase.dart';
+import 'package:chat_clean_arch/feature/domain/usecases/get_create_current_user_usecase.dart';
 import 'package:chat_clean_arch/feature/domain/usecases/get_current_user_id_usecase.dart';
 import 'package:chat_clean_arch/feature/domain/usecases/google_auth_usecase.dart';
 import 'package:chat_clean_arch/feature/domain/usecases/sign_in_usecase.dart';
@@ -30,7 +31,7 @@ class CredentialCubit extends Cubit<CredentialState> {
       signInUseCase.singIn(user);
     } on SocketException catch (_) {
       emit(CredentialFailure());
-    } catch (_) { 
+    } catch (_) {
       emit(CredentialFailure());
     }
   }
@@ -38,7 +39,7 @@ class CredentialCubit extends Cubit<CredentialState> {
   Future<void> submitSignUp({required UserEntity user}) async {
     try {
       await signUpUseCase.singUp(user);
-      //await getCreateCurrentUserUseCase.getCreateCurrentUserUseCase();
+      await GetCreateCurrentUserUseCase;
     } on SocketException catch (_) {
       emit(CredentialFailure());
     } catch (_) {
