@@ -1,9 +1,16 @@
+import 'package:chat_clean_arch/feature/domain/entities/user_entities.dart';
+import 'package:chat_clean_arch/feature/presentation/cubit/user/cubit/user_cubit.dart';
 import 'package:chat_clean_arch/feature/presentation/widgets/container_button_widget.dart';
 import 'package:chat_clean_arch/feature/presentation/widgets/textfield_email_container_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final UserEntity currentUser;
+  const ProfilePage({
+    super.key,
+    required this.currentUser,
+  });
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -12,6 +19,13 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _statusController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.value = TextEditingValue(text: widget.currentUser.name);
+    _statusController.value = TextEditingValue(text: widget.currentUser.status);
+  }
 
   @override
   void dispose() {
@@ -73,12 +87,24 @@ class _ProfilePageState extends State<ProfilePage> {
           const Divider(
             thickness: 1.50,
           ),
-          const SizedBox(height: 10,),
-          const ContainerButtonWidget(
+          const SizedBox(
+            height: 10,
+          ),
+          ContainerButtonWidget(
+            onTap: _updatUserProfile,
             title: "Update Profile",
           ),
         ],
       ),
     );
+  }
+
+  void _updatUserProfile() {
+    BlocProvider.of<UserCubit>(context).updateUser(
+        user: UserEntity(
+      uid: widget.currentUser.uid,
+      name: _nameController.text,
+      status: _statusController.text,
+    ));
   }
 }

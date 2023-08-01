@@ -1,6 +1,5 @@
 import 'dart:io';
-
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chat_clean_arch/feature/domain/entities/user_entities.dart';
 import 'package:chat_clean_arch/feature/domain/usecases/forgot_password_usecase.dart';
 import 'package:chat_clean_arch/feature/domain/usecases/get_create_current_user_usecase.dart';
@@ -18,17 +17,21 @@ class CredentialCubit extends Cubit<CredentialState> {
   final ForgotPasswordUseCase forgotPasswordUseCase;
   final GetCurrentUserIdUseCasee getCurrentUserIdUseCasee;
   final GoogleauthUseCase googleauthUseCase;
-  CredentialCubit(
-      {required this.signInUseCase,
-      required this.signUpUseCase,
-      required this.forgotPasswordUseCase,
-      required this.getCurrentUserIdUseCasee,
-      required this.googleauthUseCase})
-      : super(CredentialInitial());
+  final GetCreateCurrentUserUseCase getCreateCurrentUserUseCase;
+  CredentialCubit({
+    required this.signInUseCase,
+    required this.signUpUseCase,
+    required this.forgotPasswordUseCase,
+    required this.getCurrentUserIdUseCasee,
+    required this.googleauthUseCase,
+    required this.getCreateCurrentUserUseCase,
+  }) : super(CredentialInitial());
 
   Future<void> submitSignIn({required UserEntity user}) async {
+    emit(CredentialLoading());
     try {
-      signInUseCase.singIn(user);
+      await signInUseCase.singIn(user);
+      emit(CredentialSuccess());
     } on SocketException catch (_) {
       emit(CredentialFailure());
     } catch (_) {
@@ -37,9 +40,11 @@ class CredentialCubit extends Cubit<CredentialState> {
   }
 
   Future<void> submitSignUp({required UserEntity user}) async {
+    emit(CredentialLoading());
     try {
       await signUpUseCase.singUp(user);
-      await GetCreateCurrentUserUseCase;
+      await getCreateCurrentUserUseCase.call(user);
+      emit(CredentialSuccess());
     } on SocketException catch (_) {
       emit(CredentialFailure());
     } catch (_) {
@@ -59,7 +64,7 @@ class CredentialCubit extends Cubit<CredentialState> {
 
   Future<void> forgotPassword({required UserEntity user}) async {
     try {
-      forgotPasswordUseCase.forgotPassword(user.email!);
+      forgotPasswordUseCase.forgotPassword(user.email);
     } on SocketException catch (_) {
       emit(CredentialFailure());
     } catch (_) {

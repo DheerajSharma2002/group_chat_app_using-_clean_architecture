@@ -38,4 +38,7 @@ class FirebaseRepositoryImpl implements FirebaseRepository {
 
   @override
   Future<void> googleAuth() async => remoteDataSource.googleAuth();
+
+  @override
+  Stream<List<UserEntity>> getAllUsers() => remoteDataSource.getAllUsers();
 }

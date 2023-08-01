@@ -1,10 +1,12 @@
+import 'package:chat_clean_arch/feature/domain/entities/user_entities.dart';
 import 'package:flutter/material.dart';
 
 class SingleItemUserWidget extends StatelessWidget {
   final VoidCallback? onTap;
-  //Group Entity
+  final UserEntity profileUser;
+  
 
-  const SingleItemUserWidget({super.key, this.onTap});
+  const SingleItemUserWidget({super.key, required this.profileUser ,this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +36,8 @@ class SingleItemUserWidget extends StatelessWidget {
                       const SizedBox(
                         height: 10,
                       ),
-                      const Text(
-                        "User Name",
+                       Text(
+                        "$profileUser.name",
                         style: TextStyle(
                             fontSize: 16,
                             color: Colors.black,

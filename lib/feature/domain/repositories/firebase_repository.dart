@@ -13,4 +13,6 @@ abstract class FirebaseRepository {
   Future<String> getCurrentUserId();
 
   //FIXME: missing methods
+  Stream<List<UserEntity>> getAllUsers();
+
 }

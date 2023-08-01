@@ -3,16 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel extends UserEntity {
   UserModel({
-    final String? name,
-    final String? email,
-    final String? phoneNumber,
-    final String? isOnline,
-    final String? uid,
-    final String? status,
-    final String? profileUrl,
-    final String? password,
-    final String? dob,
-    final String? gender,
+     String name="username",
+     String email = "",
+     String phoneNumber="",
+     bool isOnline=false,
+     String uid="",
+     String status="",
+     String profileUrl="",
+     String password="",
+     String dob="",
+     String gender="",
   }) : super(
           uid: uid,
           dob: dob,

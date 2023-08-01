@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class ContainerButtonWidget extends StatelessWidget {
   final String? title;
-  final VoidCallback? tonTap;
-  const ContainerButtonWidget({super.key, this.title, this.tonTap});
+  final VoidCallback? onTap;
+  const ContainerButtonWidget({super.key, this.title, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: tonTap,
+      onTap: onTap,
       child: Container(
         height: 44,
         alignment: Alignment.center,

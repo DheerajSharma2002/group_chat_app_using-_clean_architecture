@@ -1,4 +1,8 @@
 import 'package:chat_clean_arch/constant/const.dart';
+import 'package:chat_clean_arch/feature/data/remote_data_sources/models/user_models.dart';
+import 'package:chat_clean_arch/feature/domain/entities/user_entities.dart';
+import 'package:chat_clean_arch/feature/presentation/cubit/auth/cubit/auth_cubit.dart';
+import 'package:chat_clean_arch/feature/presentation/cubit/user/cubit/user_cubit.dart';
 import 'package:chat_clean_arch/feature/presentation/pages/group_page.dart';
 import 'package:chat_clean_arch/feature/presentation/pages/profile_page.dart';
 import 'package:chat_clean_arch/feature/presentation/pages/users_page.dart';
@@ -6,9 +10,11 @@ import 'package:chat_clean_arch/feature/presentation/widgets/custom_toolbar_widg
 import 'package:chat_clean_arch/feature/presentation/widgets/textfield_email_container_widget.dart';
 import 'package:chat_clean_arch/feature/presentation/widgets/theme/style.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String uid;
+  const HomePage({super.key, required this.uid});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -22,8 +28,6 @@ class _HomePageState extends State<HomePage> {
   int _toolBarPageIndex = 0;
 
   final List<String> _popupMenuList = ["Logout", "Settings"];
-
-  List<Widget> get pages => [const GroupPage(), const UsersPage(), const ProfilePage()];
 
   @override
   void dispose() {
@@ -86,41 +90,73 @@ class _HomePageState extends State<HomePage> {
                     },
                     child: const Icon(Icons.search)),
                 PopupMenuButton(
+                    onSelected: (value) {
+                      if (value == "Logout") {
+                        BlocProvider.of<AuthCubit>(context).loggedOut();
+                      }
+                    },
                     itemBuilder: (_) => _popupMenuList.map((menuItem) {
-                          return PopupMenuItem(child: Text("$menuItem"));
-                        }).toList())
+                          return PopupMenuItem(
+                            child: Text("$menuItem"),
+                            value: menuItem,
+                          );
+                        }).toList()),
               ],
       ),
-      body: Column(
-        children: [
-          isSearch == true
-              ? emptyContainer()
-              : CustomToolBarWidget(
-                  pageIndex: _toolBarPageIndex,
-                  toolbarIndexController: (int index) {
-                    print("Current Page index $index");
-                    setState(() {
-                      _toolBarPageIndex = index;
-                    });
-                    pageViewController.jumpToPage(index);
-                  },
+      body: BlocBuilder<UserCubit, UserState>(
+        builder: (context, userState) {
+          if (userState is UserLoaded) {
+            final currentUser=userState.users.firstWhere((element) => element.uid == widget.uid, orElse: () => UserModel(), );
+            final users = userState.users.where((element) => element.uid != widget.uid).toList();
+
+            return Column(
+              children: [
+                isSearch == true
+                    ? emptyContainer()
+                    : CustomToolBarWidget(
+                        pageIndex: _toolBarPageIndex,
+                        toolbarIndexController: (int index) {
+                          print("Current Page index $index");
+                          setState(() {
+                            _toolBarPageIndex = index;
+                          });
+                          pageViewController.jumpToPage(index);
+                        },
+                      ),
+                Expanded(
+                  child: PageView.builder(
+                      controller: pageViewController,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _toolBarPageIndex = index;
+                        });
+                      },
+                      itemBuilder: (context, index) {
+                        return _switchPage(users: users, currentUser: currentUser);
+                      }),
                 ),
-          Expanded(
-            child: PageView.builder(
-                controller: pageViewController,
-                onPageChanged: (index) {
-                  setState(() {
-                    _toolBarPageIndex = index;
-                  });
-                },
-                itemCount: pages.length,
-                itemBuilder: (context, index) {
-                  return pages[index];
-                }),
-          ),
-          
-        ],
+              ],
+            );
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
       ),
     );
+  }
+
+  Widget _switchPage(
+      {required List<UserEntity> users, required UserEntity currentUser}) {
+    switch (_toolBarPageIndex) {
+      case 0:
+        return const GroupPage();
+      case 1:
+        return UsersPage(users: users,);
+      case 2:
+        return ProfilePage(currentUser: currentUser);
+      default:
+        return Container();
+    }
   }
 }

@@ -1,8 +1,12 @@
+import 'package:chat_clean_arch/feature/data/remote_data_sources/firebase_remote_data_source.dart';
 import 'package:chat_clean_arch/feature/data/remote_data_sources/firebase_remote_data_source_impl.dart';
 import 'package:chat_clean_arch/feature/data/repositories/firebase_repository_impl.dart';
 import 'package:chat_clean_arch/feature/domain/repositories/firebase_repository.dart';
+import 'package:chat_clean_arch/feature/domain/usecases/forgot_password_usecase.dart';
+import 'package:chat_clean_arch/feature/domain/usecases/get_all_users_usecase.dart';
 import 'package:chat_clean_arch/feature/domain/usecases/get_create_current_user_usecase.dart';
 import 'package:chat_clean_arch/feature/domain/usecases/get_current_user_id_usecase.dart';
+import 'package:chat_clean_arch/feature/domain/usecases/get_update_usecase.dart';
 import 'package:chat_clean_arch/feature/domain/usecases/google_auth_usecase.dart';
 import 'package:chat_clean_arch/feature/domain/usecases/is_sign_in_usecase.dart';
 import 'package:chat_clean_arch/feature/domain/usecases/sign_in_usecase.dart';
@@ -10,6 +14,7 @@ import 'package:chat_clean_arch/feature/domain/usecases/sign_out_usecase.dart';
 import 'package:chat_clean_arch/feature/domain/usecases/sign_up_usecase.dart';
 import 'package:chat_clean_arch/feature/presentation/cubit/auth/cubit/auth_cubit.dart';
 import 'package:chat_clean_arch/feature/presentation/cubit/credentials/cubit/credential_cubit.dart';
+import 'package:chat_clean_arch/feature/presentation/cubit/user/cubit/user_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
@@ -24,11 +29,17 @@ Future<void> init() async {
       isSignInUseCase: sl.call(),
       signOutUseCase: sl.call()));
 
+  sl.registerFactory<UserCubit>(() => UserCubit(
+        getAllUsersUseCase: sl.call(),
+        getUpdateUseCase: sl.call(),
+      ));
+
   sl.registerFactory<CredentialCubit>(() => CredentialCubit(
       signInUseCase: sl.call(),
       signUpUseCase: sl.call(),
       forgotPasswordUseCase: sl.call(),
       getCurrentUserIdUseCasee: sl.call(),
+      getCreateCurrentUserUseCase: sl.call(),
       googleauthUseCase: sl.call()));
 
   //UseCases
@@ -40,6 +51,13 @@ Future<void> init() async {
   sl.registerLazySingleton<IsSignInUseCase>(
       () => IsSignInUseCase(repository: sl.call()));
 
+  sl.registerLazySingleton<GetUpdateUseCase>(
+      () => GetUpdateUseCase(repository: sl.call())); 
+
+  sl.registerLazySingleton<GetAllUsersUseCase>(
+      () => GetAllUsersUseCase(repository: sl.call()));       
+  
+
   //CredentialCubit UseCases
   sl.registerLazySingleton<SignInUseCase>(
       () => SignInUseCase(repository: sl.call()));
@@ -49,10 +67,16 @@ Future<void> init() async {
       () => GetCreateCurrentUserUseCase(repository: sl.call()));
   sl.registerLazySingleton<GoogleauthUseCase>(
       () => GoogleauthUseCase(repository: sl.call()));
+  sl.registerLazySingleton<ForgotPasswordUseCase>(
+      () => ForgotPasswordUseCase(repository: sl.call()));
 
   //Repository
   sl.registerLazySingleton<FirebaseRepository>(
       () => FirebaseRepositoryImpl(remoteDataSource: sl.call()));
+
+  sl.registerLazySingleton<FirebaseRemoteDataSource>(() =>
+      FirebaseRemoteDataSourceImpl(
+          fireStore: sl.call(), auth: sl.call(), googleSignIn: sl.call()));
 
   //RemoteData Source
   sl.registerLazySingleton<FirebaseRemoteDataSourceImpl>(() =>

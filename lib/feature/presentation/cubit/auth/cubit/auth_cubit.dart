@@ -1,6 +1,5 @@
 import 'dart:io';
-
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chat_clean_arch/feature/domain/usecases/get_current_user_id_usecase.dart';
 import 'package:chat_clean_arch/feature/domain/usecases/is_sign_in_usecase.dart';
 import 'package:chat_clean_arch/feature/domain/usecases/sign_out_usecase.dart';
@@ -12,6 +11,7 @@ class AuthCubit extends Cubit<AuthState> {
   final IsSignInUseCase isSignInUseCase;
   final GetCurrentUserIdUseCasee getCurrentUserIdUseCasee;
   final SignOutUseCase signOutUseCase;
+  
 
   AuthCubit(
       {required this.getCurrentUserIdUseCasee,
@@ -34,7 +34,7 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> loggedOm() async {
+  Future<void> loggedIn() async {
     try {
       final uid = await getCurrentUserIdUseCasee.call();
       emit(AuthenticatedState(uid: uid));

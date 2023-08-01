@@ -12,5 +12,5 @@ abstract class FirebaseRemoteDataSource {
   Future<void> getCreateCurrentUser(UserEntity user);
   Future<String> getCurrentUserId();
 
-  //FIXME: missing methods
+  Stream<List<UserEntity>> getAllUsers();
 }
